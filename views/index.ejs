@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Bus Notification System</title>
+  <script src="/socket.io/socket.io.js"></script>
+  <script>
+    const socket = io();
+
+    // Join a room based on the selected role
+    function joinRole(role) {
+      socket.emit('joinRoom', role);
+    }
+
+    // Bus Driver sends bus status
+    function busDeparted() {
+      socket.emit('busStatus', 'departed');
+    }
+
+    function busReached() {
+      socket.emit('busStatus', 'reached');
+    }
+
+    // Listen for notifications
+    socket.on('notification', (message) => {
+      alert('Notification: ' + message);
+    });
+
+    // Display a message when joining a room
+    socket.on('message', (msg) => {
+      console.log(msg);
+    });
+  </script>
+</head>
+<body>
+  <h1>Bus Notification System</h1>
+
+  <h3>Select Role</h3>
+  <button onclick="joinRole('parent')">Join as Parent</button>
+  <button onclick="joinRole('admin')">Join as School Admin</button>
+  <button onclick="joinRole('driver')">Join as Bus Driver</button>
+
+  <div id="driverActions" style="display: none;">
+    <h3>Bus Driver Actions</h3>
+    <button onclick="busDeparted()">Bus Departed</button>
+    <button onclick="busReached()">Bus Reached</button>
+  </div>
+
+  <script>
+    // Show driver actions if bus driver joins
+    socket.on('message', (msg) => {
+      if (msg.includes('driver')) {
+        document.getElementById('driverActions').style.display = 'block';
+      }
+    });
+  </script>
+</body>
+</html>
