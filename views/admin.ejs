@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Admin View</title>
+  <script src="/socket.io/socket.io.js"></script>
+  <style>
+    video {
+      width: 100%;
+      max-width: 500px;
+      border: 2px solid black;
+    }
+  </style>
+</head>
+<body>
+  <h1>Admin View</h1>
+  <video id="adminVideo" controls autoplay></video>
+
+  <script>
+    const socket = io();
+    const adminVideo = document.getElementById('adminVideo');
+
+    // Create an array to store video chunks
+    let chunks = [];
+
+    socket.on('adminStream', (data) => {
+      // Collect the video chunks
+      chunks.push(data);
+
+      // Create a Blob URL and assign it to the video element
+      let blob = new Blob(chunks, { type: 'video/webm' });
+      let url = URL.createObjectURL(blob);
+
+      // Set the video element's source to the Blob URL
+      adminVideo.src = url;
+    });
+  </script>
+</body>
+</html>
+

@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Driver Camera</title>
+  <script src="/socket.io/socket.io.js"></script>
+  <style>
+    video {
+      width: 100%;
+      max-width: 500px;
+      border: 2px solid black;
+    }
+  </style>
+</head>
+<body>
+  <h1>Driver Camera</h1>
+  <video id="driverVideo" autoplay muted></video>
+  <button id="startCameraBtn">Start Camera</button>
+
+  <script>
+    const socket = io();
+    const videoElement = document.getElementById('driverVideo');
+    const startCameraBtn = document.getElementById('startCameraBtn');
+
+    // Function to start the camera and stream video
+    function startCamera() {
+      navigator.mediaDevices.getUserMedia({ video: true, audio: false })
+        .then(stream => {
+          videoElement.srcObject = stream;
+          
+          // Send the stream to the server using WebSocket
+          const mediaRecorder = new MediaRecorder(stream);
+          mediaRecorder.ondataavailable = (e) => {
+            socket.emit('driverStream', e.data);
+          };
+          mediaRecorder.start(100);  // Send data in chunks every 100ms
+        })
+        .catch(err => console.error('Error accessing camera:', err));
+    }
+
+    // Start the camera when the button is clicked
+    startCameraBtn.addEventListener('click', startCamera);
+  </script>
+</body>
+</html>
