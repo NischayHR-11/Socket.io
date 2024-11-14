@@ -22,6 +22,14 @@ app.get('/', (req, res) => {
   res.render("./index.ejs");
 });
 
+app.get('/driver', (req, res) => {
+  res.render("./driver.ejs");
+});
+
+app.get('/admin', (req, res) => {
+ res.render("./admin.ejs");
+});
+
 // Handle socket.io connections
 io.on('connection', (socket) => {
   console.log('A user connected');
@@ -46,6 +54,16 @@ io.on('connection', (socket) => {
     }
   });
 
+  // Listen for driver video stream
+  socket.on('driverStream', (data) => {
+    // Broadcast the video stream to all admins
+    socket.broadcast.emit('adminStream', data);
+  });
+
+  socket.on('disconnect', () => {
+    console.log('A user disconnected');
+  });
+
   // Disconnect event
   socket.on('disconnect', () => {
     console.log('User disconnected');
@@ -53,6 +71,6 @@ io.on('connection', (socket) => {
 });
 
 // Start the server
-server.listen(3000, () => {
+server.listen(3000, "0.0.0.0", () => {
   console.log('Server is running on port 3000');
 });
