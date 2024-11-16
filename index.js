@@ -17,10 +17,6 @@ const ROLES = {
   DRIVER: 'driver',
 };
 
-// Serve the HTML file
-app.get('/', (req, res) => {
-  res.render("./index.ejs");
-});
 
 app.get('/driver', (req, res) => {
   res.render("./driver.ejs");
